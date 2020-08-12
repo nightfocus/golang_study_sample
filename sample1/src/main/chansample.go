@@ -62,7 +62,7 @@ func chanSample() {
 func chanSyncSample() {
 
 	var wg sync.WaitGroup
-	quit := make(chan bool)
+	quit := make(chan struct{})
 	for i := 0; i < 2; i++ {
 		wg.Add(1)
 		go func(id int) {

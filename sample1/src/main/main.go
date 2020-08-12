@@ -61,9 +61,52 @@ func checkInterface(anything interface{}) bool {
 	}
 }
 
+type Ier interface {
+	GetName() string
+}
+
+type Humer struct {
+}
+
+func (h *Humer) GetName() string {
+	return "IamHumer"
+}
+
+type I interface {
+	Name()
+}
+type S struct {
+}
+
+func (*S) Name() {
+}
+
 func main() {
 	fmt.Println("------------------------ Begin ...")
+
+	/*
+		ps := new(string)  // ps是一个指向string类型的指针
+		pps := ps
+		*ps = "abcd"
+		*pps = "xyzxyz"
+		fmt.Println(*ps) // 会输出xyzxyz
+	*/
+
 	// testPanic()
+
+	value := S{}
+	value.Name() //可以调用
+	var point = &value
+	point.Name() //可以调用
+
+	h := Humer{}
+	var ph = &h
+	fmt.Println(ph.GetName())
+	/*
+		for _, v := range h {
+			fmt.Println(v.GetName())
+		}
+	*/
 
 	// 测试最简单的context
 	TestContext()
