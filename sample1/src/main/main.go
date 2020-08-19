@@ -81,6 +81,11 @@ type S struct {
 func (*S) Name() {
 }
 
+const (
+	Mon string = "Monday"
+	Tue string = "Tuesday"
+)
+
 func main() {
 	fmt.Println("------------------------ Begin ...")
 
@@ -200,14 +205,14 @@ func main() {
 	   		}
 	   		println()
 	   	}
-	*/
+	//*/
 
 	dm := Datam{}
 	fmt.Println(dm) // 都会是初始值
 	dm.id = 5
 	onebyte := (byte)('c')
 	dm.b = &onebyte
-	dm.s = "heooo"
+	dm.s = Mon
 	fmt.Printf("Datam:%v, %c\n", dm, *dm.b)
 
 	dm2 := Datam2{}
@@ -217,6 +222,14 @@ func main() {
 	bb[1] = 'B'
 	dm2.bb[0] = 'A' // 会覆盖前面的赋值
 	fmt.Printf("Datams:%v, %s\n", dm2, dm2.bb)
+
+	fmt.Println("5=======================================")
+	var pf Platform = Dos
+	fmt.Println("this is ", pf, pf.ShowText())
+	pfLst := pf.List()
+	for _, v := range pfLst {
+		fmt.Println("foreach Platform:", v.Key, v.Val)
+	}
 
 	// 仿 静态类
 	ns := NullStatic{}
@@ -274,13 +287,13 @@ func main() {
 
 	// 等待信号来退出
 	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 0)
+	done := make(chan struct{}, 0)
 	// 将对应的信号通知sigs
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sig := <-sigs
 		fmt.Println("Recv signal: ", sig)
-		done <- true
+		done <- struct{}{}
 	}()
 	fmt.Println("I am waiting Signal")
 	<-done
