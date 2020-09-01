@@ -9,7 +9,19 @@ import (
 
 var quitSemaphore chan bool
 
+func init() {
+	quitSemaphore = make(chan bool)
+}
+
 // var t1 int32
+
+// gl 用来控制允许的最大并发数
+// cnt 是连接TCP成功后，发送报文的个数
+func echoClientLimited(addr string, cnt int, ngl *GoLimit) {
+	defer ngl.Done()
+
+	echoClient(addr, cnt)
+}
 
 func echoClient(addr string, cnt int) {
 	var tcpAddr *net.TCPAddr
@@ -28,6 +40,7 @@ func echoClient(addr string, cnt int) {
 	totalsend := 0
 	for i := 0; i < cnt; i++ {
 		b := make([]byte, 1000+i)
+		b[0] = 0xC2
 		s, _ := conn.Write(b)
 		totalsend += s
 		time.Sleep(1 * time.Millisecond)
@@ -45,11 +58,9 @@ func echoClient(addr string, cnt int) {
 
 	select {
 	case <-quitSemaphore:
-	default:
-		break
+		fmt.Println("need to close self: bytes: ", totalsend, conn.LocalAddr().String())
 	}
 
-	fmt.Println("need to close self: bytes: ", totalsend, conn.LocalAddr().String())
 }
 
 func onMessageRecived(conn *net.TCPConn) {
@@ -59,7 +70,7 @@ func onMessageRecived(conn *net.TCPConn) {
 	for {
 		len, err := reader.Read(buf)
 		if err != nil {
-			fmt.Println("read error. all recv bytes: ", totalrecv, err)
+			fmt.Println("read error! all recv bytes: ", totalrecv, err)
 			quitSemaphore <- true
 			break
 		}

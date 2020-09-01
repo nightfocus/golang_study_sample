@@ -4,7 +4,11 @@ package main
 import (
 	"container/list"
 	"ctoola"
+	"encoding/binary"
 	"fmt"
+	"runtime"
+	"runtime/debug"
+	"sync"
 
 	//"myGin"
 
@@ -86,8 +90,60 @@ const (
 	Tue string = "Tuesday"
 )
 
+func loopRun() {
+	for {
+		tid := 1 // ctoola.GetThreadID() // linux only
+		fmt.Println("this tid: ", tid)
+		// time.Sleep(1 * time.Second)
+	}
+}
+
+// encoding/binary 用法
+func bn() {
+	var a int32
+	p := &a
+	b := [10]int64{1}
+	s := "adsa"
+	bs := make([]byte, 10)
+
+	fmt.Println(binary.Size(a))  // 4
+	fmt.Println(binary.Size(p))  // 4
+	fmt.Println(binary.Size(b))  // 80
+	fmt.Println(binary.Size(s))  // -1
+	fmt.Println(binary.Size(bs)) // 10
+
+	// 将数字 0x12345678，以小字节序存入到 []byte中，然后输出验证
+	bs1 := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs1, 0x12345678)
+	for _, x := range bs1 {
+		fmt.Printf("%02X", x)
+	}
+	fmt.Printf("\n")
+
+}
+
 func main() {
-	fmt.Println("------------------------ Begin ...")
+	// 设置可使用的最大CPU核数，设为1，那么这个程序的CPU占用最多为100%
+	// 在Linux实测，设置这个值和程序启动后的工作线程数无关
+	runtime.GOMAXPROCS(2)
+	// 设置允许的最大工作线程数。在4核CPU的Linux上，这个值不能低于5
+	// 返回原来的值
+	oldv := debug.SetMaxThreads(8)
+
+	fmt.Println("------------------------ Begin... maxthreads:", oldv)
+	//bn()
+
+	// go loopRun()
+	ngl := NewGoLimit(10) // 表示最多允许10协程并发
+	for ic := 0; ic < 100; ic++ {
+		ngl.Add() // 登记一个协程，对应的用 ngl.Done 释放一个协程
+		go echoClientLimited("101.200.188.59:20206", 10, ngl)
+	}
+
+	// 阻塞
+	var wg1 sync.WaitGroup
+	wg1.Add(1)
+	wg1.Wait()
 
 	/*
 		ps := new(string)  // ps是一个指向string类型的指针
@@ -238,6 +294,12 @@ func main() {
 
 	chanSample()
 	fmt.Println("8=======================================")
+
+	// 通过interface来隐藏一个实现的内部细节
+	mw := NewWidget()
+	mwid := mw.GetId()
+	fmt.Println("mwid:", mwid)
+	fmt.Println("9=======================================")
 
 	// 一个简单的http访问请求
 	/*
