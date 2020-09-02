@@ -1,8 +1,6 @@
 package tasks
 
-import (
-	. "common"
-)
+//	. "common"
 
 // Ref: https://www.jianshu.com/p/21de03ac682c
 
@@ -86,9 +84,9 @@ func (d *Dispatcher) Dispatch() {
 			// 上面两行，最好是放在一个协程中执行，这样当没有worker就绪时，
 			// 或者将这个job写入不了时（jobChannel是不带缓冲的），也不会阻塞这个for循环。
 			go func(job Job) {
-				DbgPrint("1")
+				//DbgPrint("1")
 				jobChannel := <-d.workerPool // 从WorkerPool中获得一个已就绪的worker
-				DbgPrint("2")
+				//DbgPrint("2")
 				jobChannel <- job // 将任务分配给这个worker
 			}(job)
 

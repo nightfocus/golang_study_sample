@@ -4,7 +4,7 @@ import "runtime"
 
 var (
 	GMaxWorker = runtime.NumCPU()
-	GMaxQueue  = 512
+	GMaxQueue  = 64
 	GJobQueue  chan Job
 )
 

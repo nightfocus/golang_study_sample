@@ -6,9 +6,12 @@ import (
 	"ctoola"
 	"encoding/binary"
 	"fmt"
+	"math/rand"
 	"runtime"
 	"runtime/debug"
 	"sync"
+	"tasks"
+	"time"
 
 	//"myGin"
 
@@ -122,27 +125,83 @@ func bn() {
 
 }
 
+//*
+type Test1 struct {
+	Name string
+	Pwg  *sync.WaitGroup
+}
+
+// 模拟一个执行时长是随机的任务
+func (t *Test1) Exec() error {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	// fmt.Println("Here is:", t.Name)
+	ss := r.Intn(100) + 1
+	time.Sleep(time.Duration(ss) * time.Millisecond)
+	fmt.Printf("After sleep. Here is:%s, delay %d ms.\n", t.Name, ss)
+
+	t.Pwg.Done()
+	return nil
+}
+
+// 创建10万个任务，每个任务间隔1毫秒（不间隔也可以，但在循环投递的几秒内，CPU占满）
+// 投递给GJobQueue去异步执行
+func testTasks() {
+	total := 99999
+	var wg sync.WaitGroup
+
+	for i := 0; i < total; i++ {
+		wg.Add(1)
+		s := fmt.Sprintf("Is%d", i)
+
+		t := Test1{Name: s, Pwg: &wg}
+		work := &t
+		// fmt.Println("deliver ", t.Name)
+		tasks.GJobQueue <- work
+		time.Sleep(1 * time.Millisecond)
+		// fmt.Println("deliver is finished. ", t.Name)
+	}
+
+	fmt.Println("deliver is completed, total: ", total)
+	// 等待所有任务执行完成
+	// 如果不等待，那就不调用 Wait()
+	wg.Wait()
+	fmt.Println("all task is completed, total: ", total)
+}
+
+// */
+
 func main() {
 	// 设置可使用的最大CPU核数，设为1，那么这个程序的CPU占用最多为100%
 	// 在Linux实测，设置这个值和程序启动后的工作线程数无关
-	runtime.GOMAXPROCS(2)
+	runtime.GOMAXPROCS(4)
 	// 设置允许的最大工作线程数。在4核CPU的Linux上，这个值不能低于5
 	// 返回原来的值
-	oldv := debug.SetMaxThreads(8)
+	oldv := debug.SetMaxThreads(16)
 
 	fmt.Println("------------------------ Begin... maxthreads:", oldv)
 	//bn()
 
+	// 用来结合GOMAXPROCS(), SetMaxThreads() 测试协程和线程的关系.
 	// go loopRun()
+
+	/* 测试限制并发协程数
 	ngl := NewGoLimit(10) // 表示最多允许10协程并发
 	for ic := 0; ic < 100; ic++ {
 		ngl.Add() // 登记一个协程，对应的用 ngl.Done 释放一个协程
 		go echoClientLimited("101.200.188.59:20206", 10, ngl)
 	}
+	*/
 
-	// 阻塞
+	// 测试tasks包里的并发处理系统
+	// go testTasks()
+
+	// 阻塞9999秒后继续.
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
+	go func(wg1 *sync.WaitGroup) {
+		time.Sleep(9999 * time.Second)
+		wg1.Done()
+	}(&wg1)
 	wg1.Wait()
 
 	/*
