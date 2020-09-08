@@ -2,6 +2,7 @@
 package main
 
 import (
+	"apiclient"
 	"container/list"
 	"ctoola"
 	"encoding/binary"
@@ -173,13 +174,15 @@ func testTasks() {
 func main() {
 	// 设置可使用的最大CPU核数，设为1，那么这个程序的CPU占用最多为100%
 	// 在Linux实测，设置这个值和程序启动后的工作线程数无关
-	runtime.GOMAXPROCS(4)
+	runtime.GOMAXPROCS(4) // 设定 GMP 概念里 P 的数量
 	// 设置允许的最大工作线程数。在4核CPU的Linux上，这个值不能低于5
 	// 返回原来的值
-	oldv := debug.SetMaxThreads(16)
+	oldv := debug.SetMaxThreads(16) // 设定 GMP 概念里 M 的数量
 
 	fmt.Println("------------------------ Begin... maxthreads:", oldv)
 	//bn()
+
+	apiclient.PostMegFacepp()
 
 	// 用来结合GOMAXPROCS(), SetMaxThreads() 测试协程和线程的关系.
 	// go loopRun()
@@ -331,7 +334,7 @@ func main() {
 	fmt.Printf("Datam:%v, %c\n", dm, *dm.b)
 
 	dm2 := Datam2{}
-	bb := make([]byte, 10)
+	bb := make([]byte, 0, 10)
 	dm2.bb = bb // 两个会共用同一块内存
 	bb[1] = 'a'
 	bb[1] = 'B'
