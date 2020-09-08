@@ -96,13 +96,13 @@ const (
 
 func loopRun() {
 	for {
-		tid := 1 // ctoola.GetThreadID() // linux only
+		tid := 1 // ctoola.GetThreadID() // linux
 		fmt.Println("this tid: ", tid)
 		// time.Sleep(1 * time.Second)
 	}
 }
 
-// encoding/binary 用法
+// encoding/binary 用法 
 func bn() {
 	var a int32
 	p := &a
