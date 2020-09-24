@@ -54,12 +54,15 @@ func PostWithFormData(method, url string, postData *map[string]string) {
 	//resp, _ := http.DefaultClient.Do(req)
 
 	// 方式二：直接用Post方法调用
-	resp, _ := http.DefaultClient.Post(url, w.FormDataContentType(), body)
+	resp, err := http.DefaultClient.Post(url, w.FormDataContentType(), body)
+	if err == nil && resp.StatusCode == 200 {
+		data, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
 
-	data, _ := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	fmt.Println(resp.StatusCode)
-	fmt.Printf("%s", data)
+		fmt.Println(resp.StatusCode)
+		fmt.Printf("%s", data)
+	} else {
+		fmt.Println("post err: ", err, resp)
+	}
 
 }
