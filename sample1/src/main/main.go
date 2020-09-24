@@ -183,7 +183,7 @@ func main() {
 	//bn()
 
 	// 一个调用face++的最简单示例
-	apiclient.PostMegFacepp()
+	// apiclient.PostMegFacepp()
 
 	// 用来结合GOMAXPROCS(), SetMaxThreads() 测试协程和线程的关系.
 	// go loopRun()
