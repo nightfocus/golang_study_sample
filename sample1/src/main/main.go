@@ -2,7 +2,7 @@
 package main
 
 import (
-	"apiclient"
+	//"apiclient"
 	"container/list"
 	"ctoola"
 	"encoding/binary"
@@ -203,7 +203,7 @@ func main() {
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go func(wg1 *sync.WaitGroup) {
-		time.Sleep(9999 * time.Second)
+		// time.Sleep(9999 * time.Second)
 		wg1.Done()
 	}(&wg1)
 	wg1.Wait()
@@ -335,12 +335,12 @@ func main() {
 	fmt.Printf("Datam:%v, %c\n", dm, *dm.b)
 
 	dm2 := Datam2{}
-	bb := make([]byte, 0, 10)
-	dm2.bb = bb // 两个会共用同一块内存
-	bb[1] = 'a'
-	bb[1] = 'B'
+	bb := make([]byte, 2)
+	dm2.bb = bb     // 两个bb会共用同一块内存
+	bb[0] = 'a'     // a ascii is 97
+	bb[1] = 'B'     // B ascii is 66
 	dm2.bb[0] = 'A' // 会覆盖前面的赋值
-	fmt.Printf("Datams:%v, %s\n", dm2, dm2.bb)
+	fmt.Printf("Datams2:%v, %s\n", dm2, dm2.bb)
 
 	fmt.Println("5=======================================")
 	var pf Platform = Dos
