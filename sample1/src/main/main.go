@@ -102,7 +102,7 @@ func loopRun() {
 	}
 }
 
-// encoding/binary 用法 
+// encoding/binary 用法
 func bn() {
 	var a int32
 	p := &a
@@ -182,6 +182,7 @@ func main() {
 	fmt.Println("------------------------ Begin... maxthreads:", oldv)
 	//bn()
 
+	// 一个调用face++的最简单示例
 	apiclient.PostMegFacepp()
 
 	// 用来结合GOMAXPROCS(), SetMaxThreads() 测试协程和线程的关系.
