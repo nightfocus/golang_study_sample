@@ -2,7 +2,6 @@
 package main
 
 import (
-	"apiclient"
 	"container/list"
 	"ctoola"
 	"encoding/binary"
@@ -182,6 +181,13 @@ func main() {
 	fmt.Println("------------------------ Begin... maxthreads:", oldv)
 	//bn()
 
+	/*
+		// m := // make(map[string]int) // make([]int, 10) // make(chan int, 10)
+		if m == nil {
+			fmt.Printf("m is nil")
+		}
+	*/
+
 	// 一个调用face++的最简单示例
 	// apiclient.PostMegFacepp()
 
@@ -203,7 +209,7 @@ func main() {
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go func(wg1 *sync.WaitGroup) {
-		time.Sleep(9999 * time.Second)
+		// time.Sleep(9999 * time.Second)
 		wg1.Done()
 	}(&wg1)
 	wg1.Wait()
@@ -335,10 +341,10 @@ func main() {
 	fmt.Printf("Datam:%v, %c\n", dm, *dm.b)
 
 	dm2 := Datam2{}
-	bb := make([]byte, 0, 10)
-	dm2.bb = bb // 两个会共用同一块内存
-	bb[1] = 'a'
-	bb[1] = 'B'
+	bb := make([]byte, 2)
+	dm2.bb = bb     // 两个会共用同一块内存
+	bb[1] = 'a'     // a ascii is 97
+	bb[1] = 'B'     // B ascii is 66
 	dm2.bb[0] = 'A' // 会覆盖前面的赋值
 	fmt.Printf("Datams:%v, %s\n", dm2, dm2.bb)
 
