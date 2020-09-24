@@ -343,10 +343,10 @@ func main() {
 	dm2 := Datam2{}
 	bb := make([]byte, 2)
 	dm2.bb = bb     // 两个会共用同一块内存
-	bb[1] = 'a'     // a ascii is 97
+	bb[0] = 'a'     // a ascii is 97
 	bb[1] = 'B'     // B ascii is 66
 	dm2.bb[0] = 'A' // 会覆盖前面的赋值
-	fmt.Printf("Datams:%v, %s\n", dm2, dm2.bb)
+	fmt.Printf("Datams2:%v, %s\n", dm2, dm2.bb)
 
 	fmt.Println("5=======================================")
 	var pf Platform = Dos
