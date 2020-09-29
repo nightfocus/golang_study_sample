@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"container/list"
 	"ctoola"
 	"encoding/binary"
@@ -170,6 +171,37 @@ func testTasks() {
 
 // */
 
+// 测试slice在创建新的slice后的破坏性
+func testSlice() {
+	path := []byte("AAAA/BBBBBBBBB")
+	sepIndex := bytes.IndexByte(path, '/')
+	fmt.Println("sepIndex => ", sepIndex)
+	// path[low : high : max]: 从切片s的索引位置low到high处所获得的切片，len=high-low，cap=max-low
+	// 如果这么写，那么输出会符合字面的预期，会是AAAAsuffix，也不会覆盖BBBBBBBB 的内容
+	// dir1 := path[0:sepIndex:sepIndex] //full slice expression
+
+	dir1 := path[:sepIndex]
+	dir2 := path[sepIndex+1:]
+	fmt.Println("dir1 =>", string(dir1)) // prints: dir1 => AAAA
+	fmt.Println("dir2 =>", string(dir2)) // prints: dir2 => BBBBBBBBB
+
+	dir1 = append(dir1, "suffix"...) // 内置函数，在slice中追加元素
+	path = bytes.Join([][]byte{dir1, dir2}, []byte{'/'})
+
+	fmt.Println("dir1 =>", string(dir1)) // prints: dir1 => AAAAsuffix
+	fmt.Println("dir2 =>", string(dir2)) // prints: dir2 => uffixBBBB (not ok)
+
+	fmt.Println("new path =>", string(path)) // AAAAsuffix/uffixBBBB
+}
+
+type field struct {
+	name string
+}
+
+func (p *field) print() {
+	fmt.Println(p.name)
+}
+
 func main() {
 	// 设置可使用的最大CPU核数，设为1，那么这个程序的CPU占用最多为100%
 	// 在Linux实测，设置这个值和程序启动后的工作线程数无关
@@ -204,12 +236,13 @@ func main() {
 
 	// 测试tasks包里的并发处理系统
 	// go testTasks()
+	testSlice()
 
 	// 阻塞9999秒后继续.
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go func(wg1 *sync.WaitGroup) {
-		// time.Sleep(9999 * time.Second)
+		time.Sleep(9999 * time.Second)
 		wg1.Done()
 	}(&wg1)
 	wg1.Wait()

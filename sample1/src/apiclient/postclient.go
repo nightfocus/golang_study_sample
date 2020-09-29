@@ -49,9 +49,10 @@ func PostWithFormData(method, url string, postData *map[string]string) {
 	w.Close()
 
 	// 方式一：通过Do方法选择POST方式调用
-	//req, _ := http.NewRequest(method, url, body)
-	//req.Header.Set("Content-Type", w.FormDataContentType())
-	//resp, _ := http.DefaultClient.Do(req)
+	// req, _ := http.NewRequest(method, url, body)
+	// req.Close = true // 完成req后就关闭http连接
+	// req.Header.Set("Content-Type", w.FormDataContentType())
+	// resp, _ := http.DefaultClient.Do(req)
 
 	// 方式二：直接用Post方法调用
 	resp, err := http.DefaultClient.Post(url, w.FormDataContentType(), body)
@@ -64,5 +65,8 @@ func PostWithFormData(method, url string, postData *map[string]string) {
 	} else {
 		fmt.Println("post err: ", err, resp)
 	}
+	// 这是关闭空闲的http连接
+	// 否则底层tcp连接不会立即释放
+	http.DefaultClient.CloseIdleConnections()
 
 }
