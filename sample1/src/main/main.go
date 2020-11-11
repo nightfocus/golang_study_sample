@@ -8,6 +8,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math/rand"
+
+	// "net/http"
 	"runtime"
 	"runtime/debug"
 	"sync"
@@ -233,16 +235,19 @@ func main() {
 		go echoClientLimited("101.200.188.59:20206", 10, ngl)
 	}
 	*/
+	fmt.Println("1=======================================")
+	TfuncToHandle()
 
 	// 测试tasks包里的并发处理系统
 	// go testTasks()
+
 	testSlice()
 
-	// 阻塞9999秒后继续.
+	// 阻塞3秒后继续.
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go func(wg1 *sync.WaitGroup) {
-		time.Sleep(9999 * time.Second)
+		time.Sleep(3 * time.Second)
 		wg1.Done()
 	}(&wg1)
 	wg1.Wait()
@@ -257,6 +262,7 @@ func main() {
 
 	// testPanic()
 
+	fmt.Println("2=======================================")
 	value := S{}
 	value.Name() //可以调用
 	var point = &value
@@ -306,6 +312,7 @@ func main() {
 	cstr := ctoola.Toola("aabb")
 	fmt.Printf("ctoola.Toola() return : %s\n", cstr)
 
+	fmt.Println("3=======================================")
 	// 仿class的调用.
 	pmi2 := new(ctoola.MyInfo)
 	mi8 := ctoola.MyInfo{}
@@ -326,7 +333,7 @@ func main() {
 	pb := B{&pa}
 	pb.Hello(name) //hello Lee, i am a
 	//*/
-	fmt.Println("1=======================================")
+	fmt.Println("4=======================================")
 
 	// 只要传入的类型，实现了 MyCallbacker 的所有接口，就可以传递.
 	testCallback(&Hello{})
@@ -337,13 +344,13 @@ func main() {
 	lst.PushBack(float64(4.3))
 	modifyList(lst)
 	fmt.Printf("len lst:%d\n", lst.Len())
-	fmt.Println("2=======================================")
+	fmt.Println("12=======================================")
 
 	// 像操作C一样直接偏移内存操作和void*类似的转换
 	unsafePointOper()
-	fmt.Println("3=======================================")
+	fmt.Println("13=======================================")
 	voidPointOper()
-	fmt.Println("4=======================================")
+	fmt.Println("14=======================================")
 
 	/* 循环标签
 	   L1:
@@ -381,7 +388,7 @@ func main() {
 	dm2.bb[0] = 'A' // 会覆盖前面的赋值
 	fmt.Printf("Datams2:%v, %s\n", dm2, dm2.bb)
 
-	fmt.Println("5=======================================")
+	fmt.Println("15=======================================")
 	var pf Platform = Dos
 	fmt.Println("this is ", pf, pf.ShowText())
 	pfLst := pf.List()
@@ -392,16 +399,16 @@ func main() {
 	// 仿 静态类
 	ns := NullStatic{}
 	fmt.Println("ns.sFunc():", ns.sFunc())
-	fmt.Println("6=======================================")
+	fmt.Println("16=======================================")
 
 	chanSample()
-	fmt.Println("8=======================================")
+	fmt.Println("18=======================================")
 
 	// 通过interface来隐藏一个实现的内部细节
 	mw := NewWidget()
 	mwid := mw.GetId()
 	fmt.Println("mwid:", mwid)
-	fmt.Println("9=======================================")
+	fmt.Println("19=======================================")
 
 	// 一个简单的http访问请求
 	/*
@@ -421,14 +428,14 @@ func main() {
 	fmt.Println("\n\n\n11=======================================")
 	chanSyncSample()
 
-	fmt.Println("12=======================================")
+	fmt.Println("20=======================================")
 	// 类型安全检查
 	u := User{}
 	// checkInterface(quit)
 	checkInterface(&u)
 	checkInterface(u)
 
-	fmt.Println("13=======================================")
+	fmt.Println("23=======================================")
 
 	fmt.Println(strings.TrimLeft("hello Tom", "hl")) // output: ello Tome
 	words := "mongodb://oof"
