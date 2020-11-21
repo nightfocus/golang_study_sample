@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	. "common"
+	. "sample1/src/common"
 )
 
 type Worker struct {

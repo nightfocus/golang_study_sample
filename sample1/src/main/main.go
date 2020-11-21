@@ -4,16 +4,16 @@ package main
 import (
 	"bytes"
 	"container/list"
-	"ctoola"
 	"encoding/binary"
 	"fmt"
 	"math/rand"
+	"sample1/src/ctoola"
 
 	// "net/http"
 	"runtime"
 	"runtime/debug"
+	"sample1/src/tasks"
 	"sync"
-	"tasks"
 	"time"
 
 	//"myGin"
@@ -247,7 +247,7 @@ func main() {
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go func(wg1 *sync.WaitGroup) {
-		time.Sleep(3 * time.Second)
+		time.Sleep(1 * time.Second)
 		wg1.Done()
 	}(&wg1)
 	wg1.Wait()
@@ -338,12 +338,34 @@ func main() {
 	// 只要传入的类型，实现了 MyCallbacker 的所有接口，就可以传递.
 	testCallback(&Hello{})
 
+	fmt.Println("5=======================================")
+
+	nc1, _ := NewCarWrap("398-001-A", "BMX")
+	nc2, _ := NewCarWrap("945-445-M", "BENZ")
+	nc1.c.Show()
+	nc2.c.Show()
+	/*
+		runtime.SetFinalizer(nc1, func(nc1 *Car) {
+			FinalizeCar(nc1.Uid)
+		})
+		runtime.SetFinalizer(nc2, func(nc2 *Car) {
+			FinalizeCar(nc2.Uid)
+		})
+	*/
+	nc3, _ := NewCarWrap("701-000-K", "BENZ")
+	nc3.c.Show()
+
+	// MMain()
+	runtime.GC()
+
+	fmt.Println("6=======================================")
 	// 链表写
 	lst := list.New()
 	lst.PushBack(int(3))
 	lst.PushBack(float64(4.3))
 	modifyList(lst)
 	fmt.Printf("len lst:%d\n", lst.Len())
+
 	fmt.Println("12=======================================")
 
 	// 像操作C一样直接偏移内存操作和void*类似的转换

@@ -7,7 +7,7 @@ import (
 
 	// "time"
 
-	. "ctoola"
+	. "sample1/src/ctoola"
 )
 
 const (
