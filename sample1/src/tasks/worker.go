@@ -10,8 +10,8 @@ type Worker struct {
 	quit       chan bool
 }
 
-func NewWorker(workPool chan chan Job) Worker {
-	return Worker{
+func NewWorker(workPool chan chan Job) *Worker {
+	return &Worker{
 		workerPool: workPool,
 		jobChannel: make(chan Job), // 不带缓冲的chan
 		quit:       make(chan bool),
@@ -29,6 +29,7 @@ func (w Worker) Start() {
 					DbgPrint("excute job failed with err: %v", err)
 				}
 			case <-w.quit:
+				DbgPrint("worker is end.")
 				return
 			}
 		}

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sample1/src/ctoola"
+	"sample1/src/designpattern"
 
 	// "net/http"
 	"runtime"
@@ -16,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	//"myGin"
+	"sample1/src/myGin"
 
 	//	"time"
 
@@ -73,13 +74,19 @@ func checkInterface(anything interface{}) bool {
 
 type Ier interface {
 	GetName() string
+	SetName(name string)
 }
 
 type Humer struct {
+	myName string
 }
 
-func (h *Humer) GetName() string {
-	return "IamHumer"
+func (h Humer) GetName() string {
+	return h.myName
+}
+
+func (h *Humer) SetName(name string) {
+	h.myName = name
 }
 
 type I interface {
@@ -149,7 +156,7 @@ func (t *Test1) Exec() error {
 // 创建10万个任务，每个任务间隔1毫秒（不间隔也可以，但在循环投递的几秒内，CPU占满）
 // 投递给GJobQueue去异步执行
 func testTasks() {
-	total := 99999
+	total := 99
 	var wg sync.WaitGroup
 
 	for i := 0; i < total; i++ {
@@ -168,6 +175,7 @@ func testTasks() {
 	// 等待所有任务执行完成
 	// 如果不等待，那就不调用 Wait()
 	wg.Wait()
+	// tasks.Dispatcher.Stop()
 	fmt.Println("all task is completed, total: ", total)
 }
 
@@ -232,22 +240,30 @@ func main() {
 	ngl := NewGoLimit(10) // 表示最多允许10协程并发
 	for ic := 0; ic < 100; ic++ {
 		ngl.Add() // 登记一个协程，对应的用 ngl.Done 释放一个协程
+		// 最多有10个协程并发echoClientLimited()
 		go echoClientLimited("101.200.188.59:20206", 10, ngl)
 	}
-	*/
+	// */
 	fmt.Println("1=======================================")
-	TfuncToHandle()
+
+	// 普通函数转handle
+	// TfuncToHandle()
 
 	// 测试tasks包里的并发处理系统
-	// go testTasks()
+	testTasks()
 
-	testSlice()
+	// testSlice()
 
+	// [[[ 设计模式 ]]]
+	// 观察者模式：
+	designpattern.ExampleObserver()
+
+	fmt.Println("2=======================================")
 	// 阻塞3秒后继续.
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go func(wg1 *sync.WaitGroup) {
-		time.Sleep(1 * time.Second)
+		time.Sleep(5 * time.Second)
 		wg1.Done()
 	}(&wg1)
 	wg1.Wait()
@@ -262,15 +278,19 @@ func main() {
 
 	// testPanic()
 
-	fmt.Println("2=======================================")
+	fmt.Println("4=======================================")
 	value := S{}
 	value.Name() //可以调用
 	var point = &value
 	point.Name() //可以调用
 
-	h := Humer{}
-	var ph = &h
-	fmt.Println(ph.GetName())
+	var ier Ier
+	ier = &Humer{} // 这里必须用指针赋值，因为Humer是指针实现了SetName的接口
+	ier.SetName("Curise")
+	fmt.Println("Humer: ", ier.GetName())
+
+	//var ph = &h
+	//fmt.Println(ph.GetName())
 	/*
 		for _, v := range h {
 			fmt.Println(v.GetName())
@@ -291,7 +311,7 @@ func main() {
 	//time.Sleep(24 * time.Hour)
 	//return
 
-	// mge := myGin.NewMyGin()
+	mge := myGin.NewMyGin()
 	/*
 		mge.Ge.GET("/hello", func(context *gin.Context) {
 			// log.Println(">>>> hello gin start <<<<")
@@ -301,10 +321,16 @@ func main() {
 			})
 		})
 	*/
-	// mge.Ge.GET("/hello", myGin.Handle(myGin.HandleHello))
+	vv := myGin.Person1{}
+	mge.Ge.GET("/person/Name", myGin.Handle(vv.GetName)) // http://127.0.0.1:8080/person/Name
+
+	//// http://127.0.0.1:8080/hello
+	// response:
+	// {"data":{"hobby":"Sport","name":"Cruise"},"msg":"success","retcode":200}
+	mge.Ge.GET("/hello", myGin.Handle(myGin.HandleHello))
 
 	// go testPanic2()
-	// mge.Run() // default :8080
+	mge.Run() // default :8080
 
 	five := (int32)(50)
 	fmt.Printf("%d\n", SquareFunc(&five)) // 传指针类型到函数
@@ -312,7 +338,7 @@ func main() {
 	cstr := ctoola.Toola("aabb")
 	fmt.Printf("ctoola.Toola() return : %s\n", cstr)
 
-	fmt.Println("3=======================================")
+	fmt.Println("5=======================================")
 	// 仿class的调用.
 	pmi2 := new(ctoola.MyInfo)
 	mi8 := ctoola.MyInfo{}
@@ -333,12 +359,12 @@ func main() {
 	pb := B{&pa}
 	pb.Hello(name) //hello Lee, i am a
 	//*/
-	fmt.Println("4=======================================")
+	fmt.Println("6=======================================")
 
 	// 只要传入的类型，实现了 MyCallbacker 的所有接口，就可以传递.
 	testCallback(&Hello{})
 
-	fmt.Println("5=======================================")
+	fmt.Println("7=======================================")
 
 	nc1, _ := NewCarWrap("398-001-A", "BMX")
 	nc2, _ := NewCarWrap("945-445-M", "BENZ")
@@ -358,7 +384,7 @@ func main() {
 	// MMain()
 	runtime.GC()
 
-	fmt.Println("6=======================================")
+	fmt.Println("8=======================================")
 	// 链表写
 	lst := list.New()
 	lst.PushBack(int(3))

@@ -1,6 +1,6 @@
 package tasks
 
-//	. "common"
+// import . "common"
 
 // Ref: https://www.jianshu.com/p/21de03ac682c
 
@@ -8,6 +8,7 @@ type Dispatcher struct {
 	MaxWorkers int
 	workerPool chan chan Job
 	Quit       chan bool // 控制该Dispatcher退出，但目前没用到
+	mWorker    *Worker
 }
 
 func init() {
@@ -25,8 +26,8 @@ func NewDispatcher(maxWorkers int) *Dispatcher {
 
 func (d *Dispatcher) Run() {
 	for i := 0; i < d.MaxWorkers; i++ {
-		worker := NewWorker(d.workerPool)
-		worker.Start()
+		d.mWorker = NewWorker(d.workerPool)
+		d.mWorker.Start()
 	}
 
 	go d.Dispatch()
@@ -35,6 +36,9 @@ func (d *Dispatcher) Run() {
 func (d *Dispatcher) Stop() {
 	go func() {
 		d.Quit <- true
+		if d.mWorker != nil {
+			d.mWorker.Stop()
+		}
 	}()
 }
 
@@ -91,6 +95,7 @@ func (d *Dispatcher) Dispatch() {
 			}(job)
 
 		case <-d.Quit:
+			// DbgPrint("Dispatch() is end.")
 			return
 		}
 	}

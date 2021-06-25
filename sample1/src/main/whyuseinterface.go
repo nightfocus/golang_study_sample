@@ -7,6 +7,7 @@ import (
 )
 
 // 使用interface对外，内部的mywidget实现是隐藏的.
+// 也称为简单工厂模式
 type Widget interface {
 	// GetId 返回这个 Widget 的唯一标识符
 	GetId() string

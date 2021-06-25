@@ -59,3 +59,16 @@ func HandleHello(c *MyContext) {
 		"hobby": "Sport",
 	})
 }
+
+// 直接用方法做gin route
+type Person1 struct {
+}
+
+func (*Person1) GetName(c *MyContext) {
+	// Todo.
+
+	c.SuccessResponse(gin.H{
+		"name":  "Sailor",
+		"hobby": "Reading",
+	})
+}
